@@ -15,3 +15,5 @@ dist
 # editor
 .vscode
 .idea
+
+.husky

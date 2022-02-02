@@ -24,15 +24,20 @@
     "package.json": "npx sort-package-json"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@types/node": "*",
     "antd": "^4.18.5",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-is": ">= 16.8.0",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@0x219/commitlint-config": "1.0.2",
     "@commitlint/cli": "16.1.0",
     "@types/react": "17.0.38",
     "@types/react-dom": "17.0.11",
+    "@types/styled-components": "^5.1.21",
     "@typescript-eslint/eslint-plugin": "5.10.1",
     "@typescript-eslint/parser": "5.10.1",
     "@vitejs/plugin-legacy": "1.6.4",
@@ -54,5 +59,8 @@
     "vite": "2.7.13",
     "vite-plugin-mkcert": "1.5.2",
     "vite-tsconfig-paths": "3.3.17"
+  },
+  "resolutions": {
+    "styled-components": "^5"
   }
 }

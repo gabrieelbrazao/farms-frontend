@@ -1,10 +1,6 @@
-import { StrictMode } from "react";
 import { render } from "react-dom";
-import App from "./App";
+import App from "./pages";
+import "antd/dist/antd.css";
+import "./styles/global.css";
 
-render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-  document.getElementById("root")
-);
+render(<App />, document.getElementById("root"));
