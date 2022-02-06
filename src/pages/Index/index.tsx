@@ -1,5 +1,4 @@
 import { Layout, message } from "antd";
-import { Sider } from "@app/components/Sider";
 import { Drawer } from "@app/components/Drawer";
 import { Header } from "@app/components/Header";
 import { FarmsScreen } from "@app/components/FarmsScreen";
@@ -8,9 +7,10 @@ import { Dashboard } from "@app/components/Dashboard";
 import api from "@app/services/api";
 import { setFarms } from "@app/store/slices/farms";
 import { useEffect } from "react";
+import { Container } from "./styleds";
 
 export default function App() {
-  const { siderSelectedKeys } = useAppSelector((state) => state.misc);
+  const { currentPage } = useAppSelector((state) => state.misc);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -35,14 +35,12 @@ export default function App() {
     <>
       <Drawer />
 
-      <Layout style={{ minHeight: "100vh" }}>
-        <Sider />
-
+      <Container>
         <Layout>
           <Header />
-          {siderSelectedKeys[0] === "2" ? <FarmsScreen /> : <Dashboard />}
+          {currentPage === "Dashboard" ? <Dashboard /> : <FarmsScreen />}
         </Layout>
-      </Layout>
+      </Container>
     </>
   );
 }

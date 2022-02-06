@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   drawerIsVisible: false,
   siderIsCollapsed: false,
-  siderSelectedKeys: ["1"],
+  currentPage: "Dashboard",
 };
 
 const miscSlice = createSlice({
@@ -17,13 +17,13 @@ const miscSlice = createSlice({
     setSiderIsCollapsed: (state, { payload }) => {
       state.siderIsCollapsed = payload;
     },
-    setSiderSelectedKeys: (state, { payload }) => {
-      state.siderSelectedKeys = payload;
+    setCurrentPage: (state, { payload }) => {
+      state.currentPage = payload;
     },
   },
 });
 
 export default miscSlice.reducer;
 
-export const { setDrawerIsVisible, setSiderIsCollapsed, setSiderSelectedKeys } =
+export const { setDrawerIsVisible, setSiderIsCollapsed, setCurrentPage } =
   miscSlice.actions;

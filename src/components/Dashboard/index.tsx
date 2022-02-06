@@ -1,19 +1,22 @@
 import { useAppSelector } from "@app/hooks";
-import { Col, Layout, Row } from "antd";
+import { Col, Grid, Row, Space } from "antd";
 import {
   FaTractor,
   FaMapMarkerAlt,
   FaMapMarkedAlt,
   FaLeaf,
 } from "react-icons/fa";
-import { Chart } from "./Chart";
-import { DataCard } from "./DataCard";
+import { Chart } from "../Chart";
+import { DataCard } from "../DataCard";
 
-const { Content } = Layout;
+const { useBreakpoint } = Grid;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getMostFrequent(arr: any[]) {
-  const hashmap = arr.reduce((acc, val) => {
+function getMostFrequent(arr: string[]) {
+  type THashMap = {
+    [key: string]: number;
+  };
+
+  const hashmap = arr.reduce<THashMap>((acc, val) => {
     acc[val] = (acc[val] || 0) + 1;
     return acc;
   }, {});
@@ -25,6 +28,11 @@ function getMostFrequent(arr: any[]) {
 
 export function Dashboard() {
   const { data } = useAppSelector((state) => state.farms);
+
+  const screens = useBreakpoint();
+
+  const currentBrakePoint =
+    Object.entries(screens).find((screen) => !!screen[1])?.[0] ?? "xs";
 
   // #region STATES
   const dataStates: TChartData[] = [];
@@ -50,29 +58,34 @@ export function Dashboard() {
 
   // #region AREAS
   const totalVegetationArea = data.reduce(
-    (acc, val) => (acc += val.vegetationArea),
+    (acc, val) => acc + val.vegetationArea,
     0
   );
 
   const totalAgriculturalArea = data.reduce(
-    (acc, val) => (acc += val.agriculturalArea),
+    (acc, val) => acc + val.agriculturalArea,
     0
   );
 
-  const sumTotalArea = data.reduce((acc, val) => (acc += val.totalArea), 0);
+  const sumTotalArea = data.reduce((acc, val) => acc + val.totalArea, 0);
 
-  const dataAreas: TChartData[] = [
-    {
-      item: "Área de vegetação",
-      count: totalVegetationArea,
-      percent: Math.round((totalVegetationArea / sumTotalArea) * 1e2) / 1e2,
-    },
-    {
-      item: "Área agricultável",
-      count: totalAgriculturalArea,
-      percent: Math.round((totalAgriculturalArea / sumTotalArea) * 1e2) / 1e2,
-    },
-  ];
+  const dataAreas: TChartData[] =
+    data.length > 0
+      ? [
+          {
+            item: "Área de vegetação",
+            count: totalVegetationArea,
+            percent:
+              Math.round((totalVegetationArea / sumTotalArea) * 1e2) / 1e2,
+          },
+          {
+            item: "Área agricultável",
+            count: totalAgriculturalArea,
+            percent:
+              Math.round((totalAgriculturalArea / sumTotalArea) * 1e2) / 1e2,
+          },
+        ]
+      : [];
   // #endregion
 
   // #region CULTURES
@@ -105,9 +118,15 @@ export function Dashboard() {
   // #endregion
 
   return (
-    <Content style={{ padding: "32px" }}>
-      <Row gutter={16}>
-        <Col span={6}>
+    <Space
+      direction="vertical"
+      size={16}
+      style={{
+        padding: currentBrakePoint === "xs" ? "32px 8px" : 32,
+      }}
+    >
+      <Row gutter={[currentBrakePoint !== "xs" ? 16 : 0, 16]}>
+        <Col xs={24} sm={12} lg={6}>
           <DataCard
             color="#ff7a45"
             icon={FaTractor}
@@ -116,7 +135,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <DataCard
             color="#ff4d4f"
             icon={FaMapMarkedAlt}
@@ -129,7 +148,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <DataCard
             color="#73d13d"
             icon={FaLeaf}
@@ -146,7 +165,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <DataCard
             color="#40a9ff"
             icon={FaMapMarkerAlt}
@@ -156,8 +175,8 @@ export function Dashboard() {
         </Col>
       </Row>
 
-      <Row gutter={16} style={{ marginTop: 46 }}>
-        <Col span={8}>
+      <Row gutter={[currentBrakePoint !== "xs" ? 16 : 0, 16]}>
+        <Col xs={24} lg={8}>
           <Chart
             data={dataStates}
             title="Estados"
@@ -168,7 +187,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col span={8}>
+        <Col xs={24} lg={8}>
           <Chart
             data={dataCultures}
             title="Culturas"
@@ -179,10 +198,10 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col span={8}>
+        <Col xs={24} lg={8}>
           <Chart data={dataAreas} title="Uso de solo" suffix="ha" />
         </Col>
       </Row>
-    </Content>
+    </Space>
   );
 }

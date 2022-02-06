@@ -28,6 +28,7 @@ const defineConfig: UserConfigFn = () => {
       },
     },
   };
+
   return config;
 };
 

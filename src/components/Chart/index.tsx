@@ -1,4 +1,3 @@
-import { CaretRightOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import {
   Chart as ChartComponent,
@@ -8,7 +7,7 @@ import {
   Coordinate,
   Interaction,
 } from "bizcharts";
-import { StyledCard } from "./styleds";
+import { StyledCard, StyledTooltip, StyledTooltipIcon } from "./styleds";
 
 type TProps = {
   data: TChartData[];
@@ -33,7 +32,7 @@ export function Chart({ data, title, suffix = "" }: TProps) {
         height={300}
         data={data}
         scale={{
-          percent: { formatter: (val: number) => `${val * 100}%` },
+          percent: { formatter: (val: number) => `${(val * 100).toFixed(0)}%` },
         }}
       >
         <Coordinate type="theta" radius={0.75} />
@@ -49,14 +48,18 @@ export function Chart({ data, title, suffix = "" }: TProps) {
                 items[0].data.count > 1 ? suffix.plural : suffix.singular;
 
             return (
-              <div style={{ padding: 4 }}>
-                <CaretRightOutlined
-                  style={{ color: items[0].color, marginRight: 4 }}
-                />
-                <span style={{ marginRight: 32 }}>{name}:</span>
-                {items[0].value} ({items[0].data.count.toLocaleString()}
-                {suffix ? ` ${treatedSuffix}` : ""})
-              </div>
+              <StyledTooltip>
+                <StyledTooltipIcon color={items[0].color} />
+
+                <b>{name}:</b>
+
+                <span>{items[0].value}</span>
+
+                <span>
+                  ({items[0].data.count.toLocaleString()}
+                  {suffix ? ` ${treatedSuffix}` : ""})
+                </span>
+              </StyledTooltip>
             );
           }}
         </Tooltip>
@@ -74,7 +77,8 @@ export function Chart({ data, title, suffix = "" }: TProps) {
             "count",
             {
               layout: { type: "limit-in-plot", cfg: { action: "ellipsis" } },
-              content: ({ item, percent }) => `${item}: ${percent * 100}%`,
+              content: ({ item, percent }) =>
+                `${item}: ${(percent * 100).toFixed(0)}%`,
             },
           ]}
         />
