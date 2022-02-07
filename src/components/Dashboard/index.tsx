@@ -1,13 +1,22 @@
 import { useAppSelector } from "@app/hooks";
 import { Col, Grid, Row, Space } from "antd";
+import { useEffect, useRef, useState } from "react";
 import {
   FaTractor,
   FaMapMarkerAlt,
   FaMapMarkedAlt,
   FaLeaf,
 } from "react-icons/fa";
-import { Chart } from "../Chart";
+import { OSM, Vector as VectorSource } from "ol/source";
+import { fromLonLat } from "ol/proj";
+import { Map, View } from "ol";
+import "ol/ol.css";
+import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
+import GeoJSON from "ol/format/GeoJSON";
+import { Fill, Stroke, Style, Text } from "ol/style";
+import { theme } from "@app/theme";
 import { DataCard } from "../DataCard";
+import { Chart } from "../Chart";
 
 const { useBreakpoint } = Grid;
 
@@ -28,6 +37,8 @@ function getMostFrequent(arr: string[]) {
 
 export function Dashboard() {
   const { data } = useAppSelector((state) => state.farms);
+  const [map, setMap] = useState<Map>();
+  const mapRef = useRef(null);
 
   const screens = useBreakpoint();
 
@@ -117,12 +128,68 @@ export function Dashboard() {
   });
   // #endregion
 
+  useEffect(() => {
+    const initialMap = new Map({
+      target: mapRef.current || undefined,
+      view: new View({
+        center: fromLonLat([-51.9253, -14.235]),
+        zoom: 4,
+      }),
+      controls: [],
+    });
+
+    setMap(initialMap);
+  }, []);
+
+  useEffect(() => {
+    if (!data.length || !map) return;
+
+    map.setLayers([
+      new TileLayer({
+        source: new OSM({
+          url: "https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        }),
+      }),
+      new VectorLayer({
+        source: new VectorSource({
+          url: "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/brazil-states.geojson",
+          format: new GeoJSON(),
+        }),
+        style: (feature) => {
+          const style = new Style({
+            text: new Text({
+              scale: 1.2,
+            }),
+            fill: new Fill({
+              color: "rgba(255, 255, 255, 0.6)",
+            }),
+            stroke: new Stroke({
+              color: theme.primaryColor,
+            }),
+          });
+
+          const name = feature.get("name");
+
+          const count = data
+            .filter(({ state }) => state.name === name)
+            .reduce((acc, val) => acc + val.totalArea, 0);
+
+          if (count === 0) return new Style();
+
+          style.getText().setText(`${count.toLocaleString()} ha`);
+
+          return style;
+        },
+      }),
+    ]);
+  }, [data]);
+
   return (
     <Space
       direction="vertical"
       size={16}
       style={{
-        padding: currentBrakePoint === "xs" ? "32px 8px" : 32,
+        padding: currentBrakePoint === "xs" ? "32px 12px" : 32,
       }}
     >
       <Row gutter={[currentBrakePoint !== "xs" ? 16 : 0, 16]}>
@@ -202,6 +269,12 @@ export function Dashboard() {
           <Chart data={dataAreas} title="Uso de solo" suffix="ha" />
         </Col>
       </Row>
+
+      <div
+        ref={mapRef}
+        id="map-container"
+        style={{ height: 500, width: "100%" }}
+      />
     </Space>
   );
 }

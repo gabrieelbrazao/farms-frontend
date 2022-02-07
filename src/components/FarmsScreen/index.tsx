@@ -5,12 +5,12 @@ import {
   Row,
   Tag,
   Tooltip,
-  Table,
   message,
   Space,
   Grid,
   Input,
   TablePaginationConfig,
+  Table,
 } from "antd";
 import {
   DeleteOutlined,
@@ -20,7 +20,7 @@ import {
 } from "@ant-design/icons";
 import { ColumnsType } from "antd/lib/table";
 import { useAppDispatch, useAppSelector } from "@app/hooks";
-import { setDrawerIsVisible } from "@app/store/slices/misc";
+import { setDrawerIsVisible } from "@app/store/slices/drawer";
 import api from "@app/services/api";
 import {
   deleteFarm,
@@ -34,7 +34,8 @@ import {
   FilterDropdownProps,
   FilterValue,
 } from "antd/lib/table/interface";
-import { theme } from "@app/main";
+import { theme } from "@app/theme";
+import { Container } from "./styleds";
 
 const { useBreakpoint } = Grid;
 
@@ -44,14 +45,15 @@ const sorterNumber = (a: number, b: number) => (a > b ? 1 : -1);
 const colors = ["purple", "blue", "green", "red", "magenta", "yellow"];
 
 export function FarmsScreen() {
-  const dispatch = useAppDispatch();
-  const { data, tableLoading } = useAppSelector((state) => state.farms);
-
   const [searchText, setSearchText] = useState<Key>();
   const [searchedColumn, setSearchedColumn] = useState("");
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
   >({});
+
+  const dispatch = useAppDispatch();
+  const { data, tableLoading } = useAppSelector((state) => state.farms);
+
   const searchInput = useRef<Input | null>(null);
 
   const screens = useBreakpoint();
@@ -102,17 +104,7 @@ export function FarmsScreen() {
     setSearchText("");
   };
 
-  const getColumnSearchProps = (
-    dataIndex:
-      | "farmName"
-      | "farmerName"
-      | "cpfCnpj"
-      | "city"
-      | "state"
-      | "totalArea"
-      | "agriculturalArea"
-      | "vegetationArea"
-  ) => ({
+  const getColumnSearchProps = (dataIndex: keyof Omit<TFarm, "cultures">) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -183,7 +175,7 @@ export function FarmsScreen() {
       } else if (
         ["agriculturalArea", "vegetationArea", "totalArea"].includes(dataIndex)
       ) {
-        text = `${text.toLocaleString()} ha`;
+        text = `${text?.toLocaleString()} ha`;
       }
 
       return text
@@ -196,28 +188,15 @@ export function FarmsScreen() {
     onFilterDropdownVisibleChange: (visible: boolean) => {
       if (visible) setTimeout(() => searchInput.current?.select(), 100);
     },
-    render: (
-      text:
-        | string
-        | number
-        | {
-            id: number;
-            name: string;
-          }
-    ) => {
+    render: (text: TFarm[keyof Omit<TFarm, "cultures">]) => {
       let render = text;
 
       if (dataIndex === "state") {
-        render = (
-          text as {
-            id: number;
-            name: string;
-          }
-        ).name;
+        render = (text as TFarm["state"]).name;
       } else if (
         ["agriculturalArea", "vegetationArea", "totalArea"].includes(dataIndex)
       ) {
-        render = `${text.toLocaleString()} ha`;
+        render = `${text?.toLocaleString()} ha`;
       }
 
       return searchedColumn === dataIndex ? (
@@ -357,11 +336,11 @@ export function FarmsScreen() {
   ];
 
   return (
-    <Space
+    <Container
       direction="vertical"
       size={16}
       style={{
-        padding: currentBrakePoint === "xs" ? "32px 8px" : 32,
+        padding: currentBrakePoint === "xs" ? "32px 12px" : 32,
       }}
     >
       <Row justify="end">
@@ -384,6 +363,6 @@ export function FarmsScreen() {
         loading={tableLoading}
         onChange={handleChange}
       />
-    </Space>
+    </Container>
   );
 }

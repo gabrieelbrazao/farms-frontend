@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@app/hooks";
-import { setDrawerIsVisible } from "@app/store/slices/misc";
+import { setDrawerIsVisible } from "@app/store/slices/drawer";
 import MaskedInput from "antd-mask-input";
 import {
   Button,
@@ -33,7 +33,7 @@ export function Drawer() {
 
   const dispatch = useAppDispatch();
 
-  const { drawerIsVisible } = useAppSelector((state) => state.misc);
+  const { drawerIsVisible } = useAppSelector((state) => state.drawer);
   const { editingId, data } = useAppSelector((state) => state.farms);
 
   const [farmerDocType, setFarmerDocType] = useState("cpf");

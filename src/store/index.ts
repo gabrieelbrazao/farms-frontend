@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import farmsSlice from "./slices/farms";
-import miscSlice from "./slices/misc";
+import drawerSlice from "./slices/drawer";
 
 export const store = configureStore({
   reducer: {
     farms: farmsSlice,
-    misc: miscSlice,
+    drawer: drawerSlice,
   },
 });
 

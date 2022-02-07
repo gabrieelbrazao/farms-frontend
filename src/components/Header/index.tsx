@@ -4,8 +4,7 @@ import {
   PieChartOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { useAppDispatch, useAppSelector } from "@app/hooks";
-import { setCurrentPage } from "@app/store/slices/misc";
+import { useNavigate } from "react-router-dom";
 import {
   DesktopMenu,
   FixDiv,
@@ -18,8 +17,7 @@ import logo from "../../assets/logo.png";
 const { useBreakpoint } = Grid;
 
 export function Header() {
-  const dispatch = useAppDispatch();
-  const { currentPage } = useAppSelector((state) => state.misc);
+  const navigate = useNavigate();
 
   const screens = useBreakpoint();
 
@@ -37,33 +35,38 @@ export function Header() {
           <Col flex={1}>
             {currentBrakePoint !== "xs" ? (
               <DesktopMenu
-                selectedKeys={[currentPage]}
-                onSelect={({ key }) => dispatch(setCurrentPage(key))}
+                selectedKeys={[window.location.pathname]}
+                onSelect={({ key }) => navigate(key)}
                 mode="horizontal"
               >
-                <MobileMenu.Item key="Dashboard">Dashboard</MobileMenu.Item>
-                <MobileMenu.Item key="Produtores rurais">
+                <MobileMenu.Item key="/dashboard">Dashboard</MobileMenu.Item>
+
+                <MobileMenu.Item key="/produtores">
                   Produtores rurais
                 </MobileMenu.Item>
               </DesktopMenu>
             ) : (
               <Row justify="end">
                 <Dropdown
+                  trigger={["click"]}
                   overlay={
                     <div>
                       <MobileMenu
-                        selectedKeys={[currentPage]}
-                        onSelect={({ key }) => dispatch(setCurrentPage(key))}
+                        selectedKeys={[window.location.pathname]}
+                        onSelect={({ key }) => {
+                          navigate(key);
+                          window.focus();
+                        }}
                       >
                         <MobileMenu.Item
-                          key="Dashboard"
+                          key="/dashboard"
                           icon={<PieChartOutlined />}
                         >
                           Dashboard
                         </MobileMenu.Item>
 
                         <MobileMenu.Item
-                          key="Produtores rurais"
+                          key="/produtores"
                           icon={<TeamOutlined />}
                         >
                           Produtores rurais
