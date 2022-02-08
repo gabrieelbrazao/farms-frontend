@@ -23,6 +23,14 @@ const farmsSlice = createSlice({
     deleteFarm: (state, { payload }) => {
       state.data = state.data.filter((farm) => farm.id !== payload);
     },
+    createFarm: (state, { payload }) => {
+      state.data.push(payload);
+    },
+    updateFarm: (state, { payload }) => {
+      state.data = state.data.map((farm) =>
+        farm.id === payload.id ? payload : farm
+      );
+    },
     setEditingId: (state, { payload }) => {
       state.editingId = payload;
     },
@@ -34,5 +42,11 @@ const farmsSlice = createSlice({
 
 export default farmsSlice.reducer;
 
-export const { setFarms, deleteFarm, setEditingId, setTableLoading } =
-  farmsSlice.actions;
+export const {
+  setFarms,
+  deleteFarm,
+  createFarm,
+  updateFarm,
+  setEditingId,
+  setTableLoading,
+} = farmsSlice.actions;

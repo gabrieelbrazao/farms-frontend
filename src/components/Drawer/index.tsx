@@ -16,7 +16,7 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import api from "@app/services/api";
-import { setFarms, setTableLoading } from "@app/store/slices/farms";
+import { setTableLoading } from "@app/store/slices/farms";
 import { useCurrentBreakpoint } from "@app/hooks/useCurrentBreakpoint";
 
 const { Title } = Typography;
@@ -52,17 +52,6 @@ export function Drawer() {
 
     if (response.status === 204) {
       dispatch(setDrawerIsVisible(false));
-
-      const { data: farms } = await api.get("/farms");
-
-      dispatch(setFarms(farms));
-
-      message.success({
-        content: `Cadastro ${
-          editingId ? "alterado" : "realizado"
-        } com sucesso!`,
-        key,
-      });
     } else {
       message.error({
         content: `Erro ao ${editingId ? "alterar" : "realizar"} cadastro!`,

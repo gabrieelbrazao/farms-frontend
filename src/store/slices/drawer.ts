@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   drawerIsVisible: false,
-  siderIsCollapsed: false,
 };
 
 const drawerSlice = createSlice({

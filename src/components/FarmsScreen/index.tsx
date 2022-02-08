@@ -21,11 +21,7 @@ import { ColumnsType } from "antd/lib/table";
 import { useAppDispatch, useAppSelector } from "@app/hooks";
 import { setDrawerIsVisible } from "@app/store/slices/drawer";
 import api from "@app/services/api";
-import {
-  deleteFarm,
-  setEditingId,
-  setTableLoading,
-} from "@app/store/slices/farms";
+import { setEditingId, setTableLoading } from "@app/store/slices/farms";
 import { Key, ReactNode, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import {
@@ -64,10 +60,7 @@ export function FarmsScreen() {
 
     const { status } = await api.delete(`/farms/${id}`);
 
-    if (status === 204) {
-      dispatch(deleteFarm(id));
-      message.success({ content: "Registro removido com sucesso!", key });
-    } else {
+    if (status !== 204) {
       message.error({ content: "Erro ao remover registro!", key });
     }
 
@@ -216,6 +209,14 @@ export function FarmsScreen() {
 
   const columns: ColumnsType<TFarm> = [
     {
+      title: "#",
+      dataIndex: "id",
+      key: "id",
+      filteredValue: filteredInfo.id,
+      sorter: (a, b) => sorterNumber(a.id, b.id),
+      ...getColumnSearchProps("id"),
+    },
+    {
       title: "Fazenda",
       dataIndex: "farmName",
       key: "farmName",
@@ -284,12 +285,12 @@ export function FarmsScreen() {
       dataIndex: "cultures",
       key: "cultures",
       filters: [
-        { text: "Soja", value: "Soja" },
-        { text: "Milho", value: "Milho" },
-        { text: "Algodão", value: "Algodão" },
-        { text: "Café", value: "Café" },
-        { text: "Cana de Açucar", value: "Cana de Açucar" },
-      ],
+        ...new Set(
+          data
+            .map(({ cultures }) => cultures.map(({ name }) => name))
+            .reduce((acc, curr) => acc.concat(curr), [])
+        ),
+      ].map((culture) => ({ text: culture, value: culture })),
       filteredValue: filteredInfo.cultures,
       onFilter: (value, record) =>
         record.cultures.map(({ name }) => name).includes(value as string),

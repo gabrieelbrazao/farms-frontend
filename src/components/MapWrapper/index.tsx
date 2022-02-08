@@ -31,7 +31,19 @@ export function MapWrapper() {
   }, []);
 
   useEffect(() => {
-    if (!data.length || !map) return;
+    if (!map) return;
+
+    if (data.length === 0) {
+      map.setLayers([
+        new TileLayer({
+          source: new OSM({
+            url: "https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          }),
+        }),
+      ]);
+
+      return;
+    }
 
     map.setLayers([
       new TileLayer({

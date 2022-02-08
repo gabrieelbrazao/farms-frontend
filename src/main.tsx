@@ -9,7 +9,13 @@ import { store } from "./store";
 import { theme } from "./theme";
 import "antd/dist/antd.variable.min.css";
 import api from "./services/api";
-import { setFarms } from "./store/slices/farms";
+import {
+  createFarm,
+  deleteFarm,
+  setFarms,
+  updateFarm,
+} from "./store/slices/farms";
+import { socket, SocketContext } from "./context/socket";
 
 ConfigProvider.config({
   theme,
@@ -33,15 +39,46 @@ ConfigProvider.config({
   });
 })();
 
+(async () => {
+  socket.on("delete:farm", ({ id }) => {
+    store.dispatch(deleteFarm(id));
+
+    message.info({
+      content: `Registro ${id} foi removido.`,
+      key: "delete",
+    });
+  });
+
+  socket.on("create:farm", ({ data }: { data: TFarm }) => {
+    store.dispatch(createFarm(data));
+
+    message.info({
+      content: `Registro ${data.id} foi adicionado.`,
+      key: "create/update",
+    });
+  });
+
+  socket.on("update:farm", ({ data }: { data: TFarm }) => {
+    store.dispatch(updateFarm(data));
+
+    message.info({
+      content: `Registro ${data.id} foi alterado.`,
+      key: "create/update",
+    });
+  });
+})();
+
 render(
   <ConfigProvider locale={ptBR}>
     <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/produtores" element={<Farms />} />
-        </Routes>
-      </BrowserRouter>
+      <SocketContext.Provider value={socket}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/produtores" element={<Farms />} />
+          </Routes>
+        </BrowserRouter>
+      </SocketContext.Provider>
     </Provider>
   </ConfigProvider>,
   document.getElementById("root")
