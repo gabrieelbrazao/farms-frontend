@@ -7,7 +7,6 @@ import {
   Tooltip,
   message,
   Space,
-  Grid,
   Input,
   TablePaginationConfig,
   Table,
@@ -35,9 +34,8 @@ import {
   FilterValue,
 } from "antd/lib/table/interface";
 import { theme } from "@app/theme";
+import { useCurrentBreakpoint } from "@app/hooks/useCurrentBreakpoint";
 import { Container } from "./styleds";
-
-const { useBreakpoint } = Grid;
 
 const sorterString = (a: string, b: string) => a.localeCompare(b);
 const sorterNumber = (a: number, b: number) => (a > b ? 1 : -1);
@@ -56,10 +54,7 @@ export function FarmsScreen() {
 
   const searchInput = useRef<Input | null>(null);
 
-  const screens = useBreakpoint();
-
-  const currentBrakePoint =
-    Object.entries(screens).find((screen) => !!screen[1])?.[0] ?? "xs";
+  const currentBreakpoint = useCurrentBreakpoint();
 
   const handleDeleteFarm = async (id: number) => {
     const key = "delete";
@@ -340,7 +335,7 @@ export function FarmsScreen() {
       direction="vertical"
       size={16}
       style={{
-        padding: currentBrakePoint === "xs" ? "32px 12px" : 32,
+        padding: !["xl", "xxl"].includes(currentBreakpoint) ? "32px 12px" : 32,
       }}
     >
       <Row justify="end">

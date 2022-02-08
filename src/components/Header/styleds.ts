@@ -11,7 +11,6 @@ export const HeaderComponent = styled(Header)`
   background: #c0c2c4;
   position: fixed;
   width: 100%;
-  margin-bottom: 64px;
 `;
 
 export const HeaderRow = styled(Row)`

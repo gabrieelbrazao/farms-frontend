@@ -29,7 +29,7 @@ export function Chart({ data, title, suffix = "" }: TProps) {
 
       <ChartComponent
         autoFit
-        height={300}
+        height={250}
         data={data}
         scale={{
           percent: { formatter: (val: number) => `${(val * 100).toFixed(0)}%` },

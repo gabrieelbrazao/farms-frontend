@@ -1,24 +1,18 @@
 import { useAppSelector } from "@app/hooks";
-import { Col, Grid, Row, Space } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { Col, Row, Space, Typography } from "antd";
 import {
   FaTractor,
   FaMapMarkerAlt,
   FaMapMarkedAlt,
   FaLeaf,
 } from "react-icons/fa";
-import { OSM, Vector as VectorSource } from "ol/source";
-import { fromLonLat } from "ol/proj";
-import { Map, View } from "ol";
-import "ol/ol.css";
-import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
-import GeoJSON from "ol/format/GeoJSON";
-import { Fill, Stroke, Style, Text } from "ol/style";
-import { theme } from "@app/theme";
+import { useCurrentBreakpoint } from "@app/hooks/useCurrentBreakpoint";
 import { DataCard } from "../DataCard";
 import { Chart } from "../Chart";
+import { MapWrapper } from "../MapWrapper";
+import { StyledCard } from "./styleds";
 
-const { useBreakpoint } = Grid;
+const { Title } = Typography;
 
 function getMostFrequent(arr: string[]) {
   type THashMap = {
@@ -37,13 +31,8 @@ function getMostFrequent(arr: string[]) {
 
 export function Dashboard() {
   const { data } = useAppSelector((state) => state.farms);
-  const [map, setMap] = useState<Map>();
-  const mapRef = useRef(null);
 
-  const screens = useBreakpoint();
-
-  const currentBrakePoint =
-    Object.entries(screens).find((screen) => !!screen[1])?.[0] ?? "xs";
+  const currentBreakpoint = useCurrentBreakpoint();
 
   // #region STATES
   const dataStates: TChartData[] = [];
@@ -128,72 +117,16 @@ export function Dashboard() {
   });
   // #endregion
 
-  useEffect(() => {
-    const initialMap = new Map({
-      target: mapRef.current || undefined,
-      view: new View({
-        center: fromLonLat([-51.9253, -14.235]),
-        zoom: 4,
-      }),
-      controls: [],
-    });
-
-    setMap(initialMap);
-  }, []);
-
-  useEffect(() => {
-    if (!data.length || !map) return;
-
-    map.setLayers([
-      new TileLayer({
-        source: new OSM({
-          url: "https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        }),
-      }),
-      new VectorLayer({
-        source: new VectorSource({
-          url: "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/brazil-states.geojson",
-          format: new GeoJSON(),
-        }),
-        style: (feature) => {
-          const style = new Style({
-            text: new Text({
-              scale: 1.2,
-            }),
-            fill: new Fill({
-              color: "rgba(255, 255, 255, 0.6)",
-            }),
-            stroke: new Stroke({
-              color: theme.primaryColor,
-            }),
-          });
-
-          const name = feature.get("name");
-
-          const count = data
-            .filter(({ state }) => state.name === name)
-            .reduce((acc, val) => acc + val.totalArea, 0);
-
-          if (count === 0) return new Style();
-
-          style.getText().setText(`${count.toLocaleString()} ha`);
-
-          return style;
-        },
-      }),
-    ]);
-  }, [data]);
-
   return (
     <Space
       direction="vertical"
       size={16}
       style={{
-        padding: currentBrakePoint === "xs" ? "32px 12px" : 32,
+        padding: !["xl", "xxl"].includes(currentBreakpoint) ? "32px 12px" : 32,
       }}
     >
-      <Row gutter={[currentBrakePoint !== "xs" ? 16 : 0, 16]}>
-        <Col xs={24} sm={12} lg={6}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={12} xl={6}>
           <DataCard
             color="#ff7a45"
             icon={FaTractor}
@@ -202,7 +135,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} md={12} xl={6}>
           <DataCard
             color="#ff4d4f"
             icon={FaMapMarkedAlt}
@@ -215,7 +148,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} md={12} xl={6}>
           <DataCard
             color="#73d13d"
             icon={FaLeaf}
@@ -232,7 +165,7 @@ export function Dashboard() {
           />
         </Col>
 
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} md={12} xl={6}>
           <DataCard
             color="#40a9ff"
             icon={FaMapMarkerAlt}
@@ -242,39 +175,44 @@ export function Dashboard() {
         </Col>
       </Row>
 
-      <Row gutter={[currentBrakePoint !== "xs" ? 16 : 0, 16]}>
-        <Col xs={24} lg={8}>
-          <Chart
-            data={dataStates}
-            title="Estados"
-            suffix={{
-              plural: "fazendas",
-              singular: "fazenda",
-            }}
-          />
+      <Row gutter={[16, 16]}>
+        <Col xs={{ span: 24, order: 2 }} lg={12} xl={10}>
+          <StyledCard bodyStyle={{ height: "100%" }}>
+            <Title level={5}>Hectares por estado</Title>
+            <MapWrapper />
+          </StyledCard>
         </Col>
 
-        <Col xs={24} lg={8}>
-          <Chart
-            data={dataCultures}
-            title="Culturas"
-            suffix={{
-              plural: "fazendas",
-              singular: "fazenda",
-            }}
-          />
-        </Col>
+        <Col xs={24} lg={{ span: 12, order: 2 }} xl={14}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} xxl={12}>
+              <Chart data={dataAreas} title="Uso de solo" suffix="ha" />
+            </Col>
 
-        <Col xs={24} lg={8}>
-          <Chart data={dataAreas} title="Uso de solo" suffix="ha" />
+            <Col xs={24} xxl={12}>
+              <Chart
+                data={dataCultures}
+                title="Culturas"
+                suffix={{
+                  plural: "fazendas",
+                  singular: "fazenda",
+                }}
+              />
+            </Col>
+
+            <Col xs={24} xxl={24}>
+              <Chart
+                data={dataStates}
+                title="Estados"
+                suffix={{
+                  plural: "fazendas",
+                  singular: "fazenda",
+                }}
+              />
+            </Col>
+          </Row>
         </Col>
       </Row>
-
-      <div
-        ref={mapRef}
-        id="map-container"
-        style={{ height: 500, width: "100%" }}
-      />
     </Space>
   );
 }

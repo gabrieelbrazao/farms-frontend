@@ -1,10 +1,11 @@
-import { Button, Col, Dropdown, Grid, Row } from "antd";
+import { Button, Col, Dropdown, Row } from "antd";
 import {
   MenuOutlined,
   PieChartOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useCurrentBreakpoint } from "@app/hooks/useCurrentBreakpoint";
 import {
   DesktopMenu,
   FixDiv,
@@ -14,15 +15,9 @@ import {
 } from "./styleds";
 import logo from "../../assets/logo.png";
 
-const { useBreakpoint } = Grid;
-
 export function Header() {
   const navigate = useNavigate();
-
-  const screens = useBreakpoint();
-
-  const currentBrakePoint =
-    Object.entries(screens).find((screen) => !!screen[1])?.[0] ?? "xs";
+  const currentBreakpoint = useCurrentBreakpoint();
 
   return (
     <>
@@ -33,7 +28,7 @@ export function Header() {
           </Col>
 
           <Col flex={1}>
-            {currentBrakePoint !== "xs" ? (
+            {currentBreakpoint !== "xs" ? (
               <DesktopMenu
                 selectedKeys={[window.location.pathname]}
                 onSelect={({ key }) => navigate(key)}

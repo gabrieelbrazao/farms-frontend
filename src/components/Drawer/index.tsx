@@ -13,21 +13,17 @@ import {
   Typography,
   Form,
   InputNumber,
-  Grid,
 } from "antd";
 import { useEffect, useState } from "react";
 import api from "@app/services/api";
 import { setFarms, setTableLoading } from "@app/store/slices/farms";
+import { useCurrentBreakpoint } from "@app/hooks/useCurrentBreakpoint";
 
-const { useBreakpoint } = Grid;
 const { Title } = Typography;
 const { Option } = Select;
 
 export function Drawer() {
-  const screens = useBreakpoint();
-
-  const currentBrakePoint =
-    Object.entries(screens).find((screen) => !!screen[1])?.[0] ?? "xs";
+  const currentBreakpoint = useCurrentBreakpoint();
 
   const [form] = Form.useForm();
 
@@ -120,7 +116,7 @@ export function Drawer() {
       placement="right"
       onClose={() => dispatch(setDrawerIsVisible(false))}
       visible={drawerIsVisible}
-      width={currentBrakePoint === "xs" ? "100%" : 480}
+      width={currentBreakpoint === "xs" ? "100%" : 480}
       extra={
         <Space>
           <Button onClick={() => dispatch(setDrawerIsVisible(false))}>
