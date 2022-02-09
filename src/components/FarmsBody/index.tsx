@@ -38,7 +38,7 @@ const sorterNumber = (a: number, b: number) => (a > b ? 1 : -1);
 
 const colors = ["purple", "blue", "green", "red", "magenta", "yellow"];
 
-export function FarmsScreen() {
+export function FarmsBody() {
   const [searchText, setSearchText] = useState<Key>();
   const [searchedColumn, setSearchedColumn] = useState("");
   const [filteredInfo, setFilteredInfo] = useState<

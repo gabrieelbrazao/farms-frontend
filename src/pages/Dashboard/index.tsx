@@ -1,14 +1,14 @@
 import { Layout } from "antd";
 import { Header } from "@app/components/Header";
-import { Dashboard } from "@app/components/Dashboard";
+import { DashboardBody } from "@app/components/DashboardBody";
 import { Container } from "./styleds";
 
-export default function Page() {
+export function Dashboard() {
   return (
     <Container>
       <Layout>
         <Header />
-        <Dashboard />
+        <DashboardBody />
       </Layout>
     </Container>
   );

@@ -2,9 +2,6 @@ import { render } from "react-dom";
 import { Provider } from "react-redux";
 import ptBR from "antd/lib/locale/pt_BR";
 import { ConfigProvider, message } from "antd";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Farms from "./pages/Farms";
 import { store } from "./store";
 import { theme } from "./theme";
 import "antd/dist/antd.variable.min.css";
@@ -16,12 +13,13 @@ import {
   updateFarm,
 } from "./store/slices/farms";
 import { socket, SocketContext } from "./context/socket";
+import { Routes } from "./routes";
 
 ConfigProvider.config({
   theme,
 });
 
-(async () => {
+const loadInitialData = async () => {
   const key = "dashboard";
 
   message.loading({
@@ -37,9 +35,9 @@ ConfigProvider.config({
     content: "Dados carregados com sucesso!",
     key,
   });
-})();
+};
 
-(async () => {
+const setSocketEvents = async () => {
   socket.on("delete:farm", ({ id }) => {
     store.dispatch(deleteFarm(id));
 
@@ -66,18 +64,18 @@ ConfigProvider.config({
       key: "create/update",
     });
   });
-})();
+};
+
+if (["/dashboard", "/produtores"].includes(window.location.pathname)) {
+  loadInitialData();
+  setSocketEvents();
+}
 
 render(
   <ConfigProvider locale={ptBR}>
     <Provider store={store}>
       <SocketContext.Provider value={socket}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/produtores" element={<Farms />} />
-          </Routes>
-        </BrowserRouter>
+        <Routes />
       </SocketContext.Provider>
     </Provider>
   </ConfigProvider>,

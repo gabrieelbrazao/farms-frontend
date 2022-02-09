@@ -29,7 +29,7 @@ function getMostFrequent(arr: string[]) {
   );
 }
 
-export function Dashboard() {
+export function DashboardBody() {
   const { data } = useAppSelector((state) => state.farms);
 
   const currentBreakpoint = useCurrentBreakpoint();
