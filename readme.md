@@ -74,3 +74,13 @@ Abaixo estaremos utilizando o PNPM como package manager, mas sinta-se a vontade 
 4. Finalmente, digite o comando abaixo para iniciar o sistema:
 
 `pnpm dev`
+
+---
+
+## IMAGENS
+
+![Screenshot](readme/dashboard.png)
+
+![Screenshot](readme/table.png)
+
+![Screenshot](readme/drawer.png)
